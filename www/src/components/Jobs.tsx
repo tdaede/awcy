@@ -27,6 +27,7 @@ export class JobsComponent extends React.Component<JobsProps, {
     codec: Option;
     author: Option;
     configs: Option[];
+    jobId: Option[];
   }> {
   constructor(props: JobsProps) {
     super();
@@ -40,6 +41,10 @@ export class JobsComponent extends React.Component<JobsProps, {
     this.props.jobs.onChange.attach(() => {
       this.forceUpdate();
     });
+  }
+
+  onChangeRunId(jobId: Option) {
+    this.setState({ jobId } as any, () => { });
   }
 
   onChangeCodec(codec: Option) {
@@ -81,11 +86,16 @@ export class JobsComponent extends React.Component<JobsProps, {
 
     let authorOptions = [];
     let configOptions = [];
+    let jobIdOptions = [];
     let uniqueAuthors = [];
     let uniqueBuildsFlags = [];
+    let uniqueJobId = [];
     jobs.forEach(job => {
       if (uniqueAuthors.indexOf(job.nick) < 0) {
         uniqueAuthors.push(job.nick);
+      }
+      if (uniqueJobId.indexOf(job.id) < 0) {
+        uniqueJobId.push(job.id);
       }
       if (job.buildOptions) {
         let flags = job.buildOptions.trim().split(" ");
@@ -102,7 +112,13 @@ export class JobsComponent extends React.Component<JobsProps, {
     authorOptions = uniqueAuthors.map(author => {
       return { value: author, label: author };
     });
+    jobIdOptions = uniqueJobId.map(jobName =>{
+      return { value: jobName, label: jobName };
+    });
     return <div>
+      <div style={{ width: "100%", paddingTop: "10px", paddingBottom: "10px" }}>
+        <Select multi placeholder="Job Name" value={this.state.jobId} options={jobIdOptions} onChange={this.onChangeRunId.bind(this)} />
+      </div>
       <div style={{ display: "table", width: "100%" }}>
         <div style={{ display: "table-row" }}>
           <div style={{ display: "table-cell", paddingRight: "5px" }}>
@@ -137,6 +153,11 @@ export class JobsComponent extends React.Component<JobsProps, {
           {jobs.filter((job: Job) => {
             if (!(job.status & this.state.jobStatusFilter)) {
               return false;
+            }
+            if (this.state.jobId && this.state.jobId.length != 0 ) {
+              if (!this.state.jobId.some(option => job.id == option.value)) {
+                return false;
+              }
             }
             if (this.state.author && job.nick != this.state.author.value) {
               return false;
