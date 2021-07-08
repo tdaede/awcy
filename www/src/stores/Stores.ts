@@ -348,7 +348,8 @@ function parseBoolean(v) {
 export class JobProgress {
   constructor(
     public value: number,
-    public total: number) {
+    public total: number,
+    public eta: number ) {
     // ...
   }
 }
@@ -367,7 +368,7 @@ export class Job {
   status: JobStatus = JobStatus.Unknown;
   date: Date;
 
-  progress: JobProgress = new JobProgress(0, 0);
+  progress: JobProgress = new JobProgress(0, 0, 0);
   selected: boolean = false;
   selectedName: string = "";
   color: string = "";
@@ -920,6 +921,7 @@ export class AppStore {
           }
           job.progress.value = o.completed;
           job.progress.total = o.total;
+          job.progress.eta = o.eta;
           job.loadLog(true);
           job.onChange.post("updated status");
         });

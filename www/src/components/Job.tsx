@@ -84,8 +84,7 @@ export class JobComponent extends React.Component<JobProps, {
     if (job.status & JobStatus.Cancelable) {
       let value = job.progress.total ? job.progress.value / job.progress.total : 0;
       let label = `${job.progress.value} of ${job.progress.total}`;
-      let elapsed = minutesSince(job.date);
-      let remaining = Math.round(elapsed / value - elapsed);
+      let remaining = Math.round(job.progress.eta / 60);
       label += " (" + remaining + "m left)";
       let now = value > 0 ? 100 * value : 100;
       if (value === 0) {
