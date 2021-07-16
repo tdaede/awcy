@@ -244,10 +244,12 @@ RUN \
 
 # install VMAF
 ENV \
-	VMAF_DIR=/opt/vmaf
+	VMAF_DIR=/opt/vmaf \
+	VMAF_VERSION=v2.2.0
 
 RUN \
-	git clone https://github.com/Netflix/vmaf.git ${VMAF_DIR} && \
+	mkdir -p ${VMAF_DIR} && \
+	curl -sSL https://github.com/Netflix/vmaf/archive/refs/tags/${VMAF_VERSION}.tar.gz | tar zxf - -C ${VMAF_DIR} --strip-components=1 && \
 	cd ${VMAF_DIR}/libvmaf && \
 	meson build --buildtype release && \
 	ninja -C build && \
